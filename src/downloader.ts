@@ -1,6 +1,13 @@
 import { waitUntil } from "./wait";
 import { getMetadata } from "./metadata";
 
+export interface DownloadProgress {
+  readonly complete: number;
+  readonly total: number;
+}
+
+export type ProgressCallback = (p: DownloadProgress) => void;
+
 export class Downloader {
   readonly title: string;
   readonly controller: Controller;
@@ -77,7 +84,9 @@ export class Downloader {
   /**
    * Moves to the first page of the book and sequentially downloads all pages.
    */
-  public async downloadAllPages(): Promise<void> {
+  public async downloadAllPages(
+    progress: ProgressCallback = () => {},
+  ): Promise<void> {
     if (this.pageNumber === 1) {
       // Use this to force a refresh if we're already on the first page
       this.controller.moveToNext();
@@ -86,11 +95,13 @@ export class Downloader {
     this.controller.moveToFirst();
     await this.waitForNextPage();
 
+    const total = this.sliderModel.get("viewerMaxPage");
     let lastPage: number;
     do {
       lastPage = this.pageNumber;
       this.downloadPage();
       this.controller.moveToNext();
+      progress({ total, complete: lastPage + 1 });
       await this.waitForNextPage();
     } while (this.pageNumber !== lastPage);
   }

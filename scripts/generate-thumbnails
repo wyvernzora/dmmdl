@@ -15,9 +15,11 @@ get-uuid() {
 
 get-cover() {
     local AZW3_FILE="$1"
-    local COVER="$(dirname "$AZW3_FILE")/thumbnail_$(get-uuid "$AZW3_FILE")_EBOK_portrait.jpg"
-    "$CALIBRE_ROOT/ebook-meta" "$AZW3_FILE" --get-cover "$COVER"
+    local OUTDIR="${2:-$(dirname "$AZW3_FILE"})}"
+    local COVER="$OUTDIR/thumbnail_$(get-uuid "$AZW3_FILE")_EBOK_portrait.jpg"
+    "$CALIBRE_ROOT/ebook-meta" "$AZW3_FILE" --get-cover "$COVER" > /dev/null
     magick mogrify -resize 169x240 -colorspace Gray "$COVER"
+    echo "Processed $(basename "$AZW3_FILE")"
 }
 
 
@@ -26,9 +28,10 @@ if [ -z "$1" ]; then
 fi
 
 if [ -d "$1" ]; then
-    for f in "$1"/*.azw3; do
-        get-cover "$f"
-    done
+    ROOT="$1"
+    while IFS= read -d '' f; do
+        get-cover "$f" "$ROOT"
+    done < <(find "$ROOT" -type f -name "*.azw3" -print0)
 elif [ -f "$1" ]; then
     get-cover "$1"
 else

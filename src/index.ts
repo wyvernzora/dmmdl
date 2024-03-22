@@ -6,8 +6,11 @@ async function download(button: HTMLButtonElement): Promise<void> {
   const downloader = new Downloader(document);
   downloader.setupViewport(1860, 2480);
   await downloader.downloadMetadata();
-  await downloader.downloadAllPages();
+  await downloader.downloadAllPages((progress) => {
+    button.textContent = `${progress.complete} / ${progress.total}`;
+  });
   alert("Download complete!");
+  button.textContent = "download";
   button.disabled = false;
 }
 

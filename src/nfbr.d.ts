@@ -1,5 +1,6 @@
 declare interface PageSliderModel {
   get(name: "viewerPage"): number;
+  get(name: "viewerMaxPage"): number;
 }
 
 declare interface RendererModel {

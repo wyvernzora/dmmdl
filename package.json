@@ -12,6 +12,7 @@
   "devDependencies": {
     "@types/node": "^20.10.4",
     "path-browserify": "^1.0.1",
+    "simple-eta": "^3.0.2",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
     "webpack": "^5.89.0",

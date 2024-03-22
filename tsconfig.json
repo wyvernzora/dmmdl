@@ -7,6 +7,7 @@
     "moduleResolution": "node",
     "lib": ["DOM", "DOM.Iterable", "ES2020"],
     "removeComments": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["./src/**/*"]
 }
