@@ -1,0 +1,36 @@
+#!/bin/bash
+set -e
+
+CALIBRE_ROOT=${CALIBRE_ROOT:-"/Applications/calibre.app/Contents/MacOS"}
+
+print-usage() {
+    echo "Usage: generate-thumbnails <path>"
+    exit 1
+}
+
+get-uuid() {
+    local AZW3_FILE="$1"
+    "$CALIBRE_ROOT/ebook-meta" "$AZW3_FILE" | grep -Eo 'mobi-asin:(.+)' | cut -d: -f2
+}
+
+get-cover() {
+    local AZW3_FILE="$1"
+    local COVER="$(dirname "$AZW3_FILE")/thumbnail_$(get-uuid "$AZW3_FILE")_EBOK_portrait.jpg"
+    "$CALIBRE_ROOT/ebook-meta" "$AZW3_FILE" --get-cover "$COVER"
+    magick mogrify -resize 169x240 -colorspace Gray "$COVER"
+}
+
+
+if [ -z "$1" ]; then
+    print-usage
+fi
+
+if [ -d "$1" ]; then
+    for f in "$1"/*.azw3; do
+        get-cover "$f"
+    done
+elif [ -f "$1" ]; then
+    get-cover "$1"
+else
+    echo "ENOENT $1"
+fi

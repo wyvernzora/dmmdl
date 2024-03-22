@@ -4,6 +4,7 @@ declare interface PageSliderModel {
 
 declare interface RendererModel {
   get(name: "viewerTransitionState"): number;
+  get(name: "closeAfterAddress"): string;
 }
 
 declare interface View<T> {

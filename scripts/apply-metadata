@@ -1,0 +1,45 @@
+#!/bin/bash
+set -e
+
+CALIBRE_ROOT=${CALIBRE_ROOT:-"/Applications/calibre.app/Contents/MacOS"}
+
+print-usage() {
+    echo "Usage: apply-metadata <path>"
+    exit 1
+}
+
+get-field() {
+    jq -rc ".$2" "$1"
+}
+
+apply-metadata() {
+    local EPUB_FILE="$1"
+    local JSON_META="${1%.epub}.json"
+
+    "$CALIBRE_ROOT/ebook-meta" "$EPUB_FILE" \
+        --title "$(get-field "$JSON_META" 'title')" \
+        --title-sort "$(get-field "$JSON_META" 'titleSort')" \
+        --authors "$(get-field "$JSON_META" 'authors')" \
+        --publisher "$(get-field "$JSON_META" 'publisher')" \
+        --date "$(get-field "$JSON_META" 'publishedAt')" \
+        --comments "$(get-field "$JSON_META" 'comment')" \
+        --identifier "$(get-field "$JSON_META" 'identifier')" \
+        --language "$(get-field "$JSON_META" 'language')" \
+        --tags "$(get-field "$JSON_META" 'tags')" \
+        --series "$(get-field "$JSON_META" 'series')" \
+        --index "$(get-field "$JSON_META" 'index')"
+}
+
+if [ -z "$1" ]; then
+    print-usage
+fi
+
+if [ -d "$1" ]; then
+    for f in "$1"/*.epub; do
+        apply-metadata "$f"
+    done
+elif [ -f "$1" ]; then
+    apply-metadata "$1"
+else
+    echo "ENOENT $1"
+fi

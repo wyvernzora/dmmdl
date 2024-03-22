@@ -28,6 +28,9 @@ module.exports = {
   },
   resolve: {
     extensions: [".ts", ".js"],
+    fallback: {
+      path: "path-browserify",
+    },
   },
   plugins: [
     new webpack.BannerPlugin({

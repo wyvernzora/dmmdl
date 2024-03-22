@@ -11,6 +11,7 @@
   "license": "WTFPL",
   "devDependencies": {
     "@types/node": "^20.10.4",
+    "path-browserify": "^1.0.1",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
     "webpack": "^5.89.0",
